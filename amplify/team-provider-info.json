@@ -1,0 +1,15 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-calibrationapp-staging-55139-authRole",
+      "UnauthRoleArn": "arn:aws:iam::511895208341:role/amplify-calibrationapp-staging-55139-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::511895208341:role/amplify-calibrationapp-staging-55139-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-calibrationapp-staging-55139-deployment",
+      "UnauthRoleName": "amplify-calibrationapp-staging-55139-unauthRole",
+      "StackName": "amplify-calibrationapp-staging-55139",
+      "StackId": "arn:aws:cloudformation:ap-south-1:511895208341:stack/amplify-calibrationapp-staging-55139/9a616110-56b0-11ee-8271-0a0c282c2532",
+      "AmplifyAppId": "d3t9r8mvlo2jm1"
+    }
+  }
+}

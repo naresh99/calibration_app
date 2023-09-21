@@ -1,0 +1,31 @@
+type InstrumentSchedules @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  instrument_id: String
+  location: String
+  capacity: String
+  category: String
+  scheduled_date: AWSDate
+  performed_date: AWSDate
+  entered_by: String
+  entered_date: AWSDateTime
+  calibrationscheduleID: ID! @index(name: "byCalibrationSchedule")
+}
+
+type CalibrationSchedule @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  schedule_name: String
+  schedule_number: String
+  instrument_type: String
+  calibration_frequency: String
+  effective_Date: AWSDate
+  year: Int
+  reference_sop: String
+  prepared_by: String
+  prepared_date: AWSDateTime
+  checked_by: String
+  checked_date: AWSDateTime
+  approved_by: String
+  approved_date: AWSDateTime
+  CalScheduleToInsSchedule: [InstrumentSchedules] @hasMany(indexName: "byCalibrationSchedule", fields: ["id"])
+}
+ 
