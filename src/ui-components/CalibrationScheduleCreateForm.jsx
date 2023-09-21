@@ -90,7 +90,7 @@ export default function CalibrationScheduleCreateForm(props) {
     setErrors({});
   };
   const validations = {
-    schedule_name: [],
+    schedule_name: [{ type: "Required" }],
     schedule_number: [],
     instrument_type: [],
     calibration_frequency: [],
@@ -215,7 +215,7 @@ export default function CalibrationScheduleCreateForm(props) {
     >
       <TextField
         label="Schedule name"
-        isRequired={false}
+        isRequired={true}
         isReadOnly={false}
         value={schedule_name}
         onChange={(e) => {
