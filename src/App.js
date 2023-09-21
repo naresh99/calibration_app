@@ -5,6 +5,16 @@ import {
   CalibrationScheduleCreateForm 
  } from './ui-components';
 
+import "@aws-amplify/ui-react/styles.css";
+import {
+  withAuthenticator,
+  Button,
+  Heading,
+  Image,
+  View,
+  Card,
+} from "@aws-amplify/ui-react";
+
 function App() {
   return (
     <div className="App">
@@ -15,4 +25,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
