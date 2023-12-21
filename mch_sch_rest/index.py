@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from json import JSONEncoder
 from datetime import date
+import os
 
 
 Base = declarative_base()
@@ -14,7 +15,7 @@ Base = declarative_base()
 class Machine(Base):
     __tablename__ = 'machines'
 
-    machine_id = Column(Integer, Sequence('machine_id_seq'), primary_key=True)
+    machine_id = Column(Integer, Sequence('setup_s'), primary_key=True)
     machine_name = Column(String, nullable=False)
     manufacturer = Column(String)
     model = Column(String)
@@ -29,12 +30,11 @@ class Machine(Base):
 
 def create_session():
     # Connect to the PostgreSQL database using the SQLAlchemy engine
-    #db_url = os.environ.get('DB_URL')  # Replace with your PostgreSQL connection string
-    db_url = 'postgresql://postgres:OVzMHuedySKPHnYxO5vz@aurora-pg-cl.cluster-cvfhxsaezgfz.ap-south-1.rds.amazonaws.com:5432/aurora_pg_db1'
+    db_url = os.environ.get('DB_URL') 
     engine = create_engine(db_url, echo=True)
 
     # Create tables if they don't exist
-    Base.metadata.create_all(bind=engine)
+    #Base.metadata.create_all(bind=engine)
 
     # Create a session factory
     Session = sessionmaker(bind=engine)
@@ -47,9 +47,18 @@ def lambda_handler(event, context):
 
         if path == '/machines' and method == 'GET':
             return get_all_machines()
-
+        
+        elif path.startswith('/machines/') and method == 'GET':
+            return get_single_machine(event)    
+        
         elif method == 'POST':
-            return create_machine(json.loads(event['body']))
+            return create_machine(json.loads(event['body']))        
+
+        elif path.startswith('/machines/') and method == 'PUT':
+            return update_machine(event)            
+        
+        elif path.startswith('/machines/') and method == 'DELETE':
+            return delete_machine(event)
 
         else:
             return {
@@ -62,8 +71,82 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps({'message': 'Internal Server Error', 'error': str(e)}),
         }
+    
+# function to delete a machine by machine_id
+def delete_machine(event):
+    session = create_session()
 
+    try:
+        machine_id = event['pathParameters']['machineId']
+        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
 
+        if machine:
+            session.delete(machine)
+            session.commit()
+
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'message': 'Machine deleted successfully'}),
+            }
+        else:
+            return {
+                'statusCode': 404,
+                'body': json.dumps({'message': 'Machine not found'}),
+            }
+
+    finally:
+        session.close()    
+    
+# function to update a machine by machine_id
+def update_machine(event):
+    session = create_session()
+
+    try:
+        machine_id = event['pathParameters']['machineId']
+        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
+
+        if machine:
+            update_data = json.loads(event['body'])
+            for key, value in update_data.items():
+                setattr(machine, key, value)
+
+            session.commit()
+
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'message': 'Machine updated successfully'}),
+            }
+        else:
+            return {
+                'statusCode': 404,
+                'body': json.dumps({'message': 'Machine not found'}),
+            }
+
+    finally:
+        session.close()    
+
+# function to get a single machine by machine_id
+def get_single_machine(event):
+    session = create_session()
+
+    try:
+        machine_id = event['pathParameters']['machineId']
+        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
+
+        if machine:
+            machine_data = {key: value for key, value in machine.__dict__.items() if not key.startswith('_')}
+            return {
+                'statusCode': 200,
+                'body': json.dumps(machine_data, cls=CustomJSONEncoder),
+            }
+        else:
+            return {
+                'statusCode': 404,
+                'body': json.dumps({'message': 'Machine not found'}),
+            }
+
+    finally:
+        session.close()
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -111,9 +194,9 @@ def create_machine(data):
 if __name__ == "__main__":
     get_event ={
     "httpMethod": "GET",
-    "path" : '/schedules/123',
+    "path" : '/machines/101',
     "pathParameters": {
-      "id": "cd37060e-8e2f-4fe3-a245-e0b6de72f04d"      
+      "machineId": "101"      
     } }
     get_all_event ={
     "httpMethod": "GET",
@@ -121,47 +204,46 @@ if __name__ == "__main__":
     }    
     post_event = {
     "httpMethod": "POST",
-    "path" : '/schedules',
+    "path": "/machines",
     "body": json.dumps({
-        "id": "999999999",
-        "approved_by": "Sunil1",
-        "prepared_by": "Vinay1",
-        "effective_Date": "2023-01-01",
-        "approved_date": "2023-01-07T08:11:00.000Z",
-        "schedule_number": "SCH-DDPG-2399",
-        "schedule_name": "Digital Differential Pressure Gauge Schedule Test",
-        "prepared_date": "2023-01-05T08:10:00.000Z",
-        "reference_sop": "40-019",
-        "calibration_frequency": "Critical",
-        "checked_date": "2023-01-06T08:10:00.000Z",
-        "year": "2023",
-        "instrument_type": "Digital Differential Pressure Gauge",
-        "checked_by": "Varma1",
-        "createdAt": "2023-09-19T08:11:21.781Z",
-        "updatedAt": "2023-09-19T08:12:54.632Z"
+        "machine_name": "Sample Machine",
+        "manufacturer": "Sample Manufacturer",
+        "model": "Sample Model",
+        "serial": "123456",
+        "type": "Sample Type",
+        "location": "Sample Location",
+        "installation_date": "2023-01-01",
+        "status": "Active",
+        "usage": "Sample Usage",
+        "department": "Sample Department",
+        "owner": "Sample Owner"
     })
 }
- 
-    put_event ={
+    
+    put_event = {
     "httpMethod": "PUT",
-    "path" : '/schedules',
+    "path": "/machines/101",
     "pathParameters": {
-      "id": "999999999"
+        "machineId": "101"
     },
     "body": json.dumps({
-    "year": "9999",
-    "reference_sop": "zzzzz"
-  })}
+        "manufacturer": "Updated Manufacturer",
+        "status": "Inactive",
+        "usage": "Updated Usage",
+        "owner": "Updated Owner"
+    })
+}
+
     delete_event ={
     "httpMethod": "DELETE",
-    "path" : '/schedules',
+    "path" : '/machines/101',
     "pathParameters": {
-      "id": "999999999"
+      "machineId": "101"
     }}  
 
     context = {}
-    #response =lambda_handler(get_event, context) 
-    #print(response)
+    # response =lambda_handler(get_event, context) 
+    # print(response)
     response = lambda_handler(get_all_event, context) 
     print(response)    
     # response = lambda_handler(post_event, context) 
