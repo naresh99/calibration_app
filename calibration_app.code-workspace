@@ -1,0 +1,75 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"configurations": [
+			{
+				"type": "aws-sam",
+				"request": "direct-invoke",
+				"name": "calibrationapp4ca2660c-staging:index.handler (python3.8)",
+				"invokeTarget": {
+					"target": "code",
+					"projectRoot": "${workspaceFolder}/calibrationapp4ca2660c-staging",
+					"lambdaHandler": "index.handler"
+				},
+				"lambda": {
+					"runtime": "python3.8",
+					"payload": {},
+					"environmentVariables": {}
+				}
+			},
+			{
+				"type": "aws-sam",
+				"request": "direct-invoke",
+				"aws": {
+					"region": "ap-south-1"
+				},
+				"invokeTarget": {
+					"target": "code",
+					"lambdaHandler": "index.handler",
+					"projectRoot": "${workspaceFolder}/amplify/backend/function/calibrationapp4ca2660c/src"
+				},
+				"lambda": {
+					"runtime": "python3.11",
+					"payload": {
+						"json": {
+							"httpMethod": "GET",
+							"pathParameters": {
+								"id": "cd37060e-8e2f-4fe3-a245-e0b6de72f04d"
+							}
+						}
+					}
+				},
+				"sam": {
+					"containerBuild": false,
+					"skipNewImageCheck": false
+				},
+				"api": {
+					"httpMethod": "get"
+				},
+				"name": "test"
+			},
+			{
+				"type": "aws-sam",
+				"request": "direct-invoke",
+				"name": "src:index.handler (python3.11)",
+				"invokeTarget": {
+					"target": "code",
+					"projectRoot": "${workspaceFolder}/amplify/backend/function/calibrationapp4ca2660c/src",
+					"lambdaHandler": "index.handler"
+				},
+				"lambda": {
+					"runtime": "python3.11",
+					"payload": {
+						"path": "${workspaceFolder}/amplify/backend/function/calibrationapp4ca2660c/src/event.json"
+					},
+					"environmentVariables": {}
+				}
+			}
+		]
+	}
+}

@@ -190,7 +190,7 @@ export default function CreateSchedule(props) {
             }
           });
           await API.graphql({
-            query: createCalibrationSchedule,
+            query: createCalibrationSchedule.replaceAll("__typename", ""),
             variables: {
               input: {
                 ...modelFields,

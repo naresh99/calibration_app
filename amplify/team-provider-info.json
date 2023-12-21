@@ -16,7 +16,14 @@
         "calibrationappd07b381a": {}
       },
       "api": {
-        "calibrationapp": {}
+        "calibrationapp": {},
+        "calib": {}
+      },
+      "function": {
+        "calibrationapp4ca2660c": {
+          "deploymentBucketName": "amplify-calibrationapp-staging-55139-deployment",
+          "s3Key": "amplify-builds/calibrationapp4ca2660c-4e463441696555317454-build.zip"
+        }
       }
     }
   }

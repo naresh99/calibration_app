@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/calibrationapp4ca2660c-staging
+/amplify/*
+
 # dependencies
 /node_modules
 /.pnp

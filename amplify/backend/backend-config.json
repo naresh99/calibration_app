@@ -1,5 +1,19 @@
 {
   "api": {
+    "calib": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "calibrationapp4ca2660c"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "calibrationapp": {
       "dependsOn": [],
       "output": {
@@ -46,6 +60,32 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "calibrationapp4ca2660c": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_calibrationapp4ca2660c_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "calibrationapp4ca2660c"
+        }
+      ]
+    },
+    "AMPLIFY_function_calibrationapp4ca2660c_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "calibrationapp4ca2660c"
+        }
+      ]
     }
   }
 }

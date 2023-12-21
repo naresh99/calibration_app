@@ -101,7 +101,7 @@ export default function CalibrationScheduleUpdateForm(props) {
       const record = idProp
         ? (
             await API.graphql({
-              query: getCalibrationSchedule,
+              query: getCalibrationSchedule.replaceAll("__typename", ""),
               variables: { id: idProp },
             })
           )?.data?.getCalibrationSchedule
@@ -212,7 +212,7 @@ export default function CalibrationScheduleUpdateForm(props) {
             }
           });
           await API.graphql({
-            query: updateCalibrationSchedule,
+            query: updateCalibrationSchedule.replaceAll("__typename", ""),
             variables: {
               input: {
                 id: calibrationScheduleRecord.id,
