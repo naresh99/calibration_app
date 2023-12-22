@@ -2,6 +2,7 @@
 
 /calibrationapp4ca2660c-staging
 /amplify/*
+/mch_sch_rest/__pycache__
 
 # dependencies
 /node_modules

@@ -1,44 +1,7 @@
 import json
-import psycopg2
-from sqlalchemy import create_engine, Column, Integer, String, Date, Sequence
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from datetime import datetime
-from json import JSONEncoder
-from datetime import date
-import os
-
-
-Base = declarative_base()
-
-# Define your model
-class Machine(Base):
-    __tablename__ = 'machines'
-
-    machine_id = Column(Integer, Sequence('setup_s'), primary_key=True)
-    machine_name = Column(String, nullable=False)
-    manufacturer = Column(String)
-    model = Column(String)
-    serial = Column(String)
-    type = Column(String)
-    location = Column(String)
-    installation_date = Column(Date)
-    status = Column(String)
-    usage = Column(String)
-    department = Column(String)
-    owner = Column(String)
-
-def create_session():
-    # Connect to the PostgreSQL database using the SQLAlchemy engine
-    db_url = os.environ.get('DB_URL') 
-    engine = create_engine(db_url, echo=True)
-
-    # Create tables if they don't exist
-    #Base.metadata.create_all(bind=engine)
-
-    # Create a session factory
-    Session = sessionmaker(bind=engine)
-    return Session()
+from utils import CustomJSONEncoder
+from model import Machine
+from database import create_session
 
 def lambda_handler(event, context):
     try:
@@ -148,11 +111,7 @@ def get_single_machine(event):
     finally:
         session.close()
 
-class CustomJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, date):
-            return obj.isoformat()
-        return super().default(obj)
+
 
 def get_all_machines():
     session = create_session()
@@ -190,65 +149,3 @@ def create_machine(data):
 
     finally:
         session.close()
-
-if __name__ == "__main__":
-    get_event ={
-    "httpMethod": "GET",
-    "path" : '/machines/101',
-    "pathParameters": {
-      "machineId": "101"      
-    } }
-    get_all_event ={
-    "httpMethod": "GET",
-    "path" : "/machines"
-    }    
-    post_event = {
-    "httpMethod": "POST",
-    "path": "/machines",
-    "body": json.dumps({
-        "machine_name": "Sample Machine",
-        "manufacturer": "Sample Manufacturer",
-        "model": "Sample Model",
-        "serial": "123456",
-        "type": "Sample Type",
-        "location": "Sample Location",
-        "installation_date": "2023-01-01",
-        "status": "Active",
-        "usage": "Sample Usage",
-        "department": "Sample Department",
-        "owner": "Sample Owner"
-    })
-}
-    
-    put_event = {
-    "httpMethod": "PUT",
-    "path": "/machines/101",
-    "pathParameters": {
-        "machineId": "101"
-    },
-    "body": json.dumps({
-        "manufacturer": "Updated Manufacturer",
-        "status": "Inactive",
-        "usage": "Updated Usage",
-        "owner": "Updated Owner"
-    })
-}
-
-    delete_event ={
-    "httpMethod": "DELETE",
-    "path" : '/machines/101',
-    "pathParameters": {
-      "machineId": "101"
-    }}  
-
-    context = {}
-    # response =lambda_handler(get_event, context) 
-    # print(response)
-    response = lambda_handler(get_all_event, context) 
-    print(response)    
-    # response = lambda_handler(post_event, context) 
-    # print(response)
-    # response = lambda_handler(put_event, context) 
-    # print(response)
-    # response = lambda_handler(delete_event, context) 
-    # print(response)
