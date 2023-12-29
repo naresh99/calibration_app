@@ -17,6 +17,32 @@ if __name__ == "__main__":
         "httpMethod": "GET",
         "path": "/machine_schedules"
     }
+
+    get_by_machine_id_event = {
+        "httpMethod": "GET",
+        "path": "/machine_schedules/",
+        "queryParameters": {
+            "machineId": "102"
+        }
+    }
+
+    get_by_schedule_id_event = {
+        "httpMethod": "GET",
+        "path": "/machine_schedules/",
+        "queryParameters": {
+            "scheduleId": "202"
+        }
+    }    
+
+    get_by_mch_id_sch_id_event = {
+        "httpMethod": "GET",
+        "path": "/machine_schedules/",
+        "queryParameters": {
+            "scheduleId": "202",
+            "machineId": "102"
+        }
+    }       
+
     post_event = {
         "httpMethod": "POST",
         "path": "/machine_schedules",
@@ -46,8 +72,11 @@ if __name__ == "__main__":
     }
 
     context = {}
-    #print(lambda_handler(get_event, context))
+    print(lambda_handler(get_event, context))
     #print(lambda_handler(get_all_event, context))
+    #print(lambda_handler(get_by_machine_id_event, context))
+    #print(lambda_handler(get_by_schedule_id_event, context))
+    #print(lambda_handler(get_by_mch_id_sch_id_event, context))
     #print(lambda_handler(post_event, context))
     #print(lambda_handler(put_event, context))
-    print(lambda_handler(delete_event, context))
+    #print(lambda_handler(delete_event, context))

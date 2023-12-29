@@ -9,11 +9,11 @@ def lambda_handler(event, context):
         method = event['httpMethod']
         path = event['path']
 
-        if path == '/schedules' and method == 'GET':
-            return get_all_schedules()
+        if path.startswith('/schedules')  and method == 'GET':
+            return get_schedules(event)
 
-        elif path.startswith('/schedules/') and method == 'GET':
-            return get_single_schedule(event)
+        # elif path.startswith('/schedules') and method == 'GET':
+        #     return get_single_schedule(event)
 
         elif method == 'POST':
             return create_schedule(json.loads(event['body']))
@@ -94,6 +94,7 @@ def get_single_schedule(event):
     session = create_session()
 
     try:
+
         schedule_id = event['pathParameters']['scheduleId']
         schedule = session.query(Schedule).filter_by(schedule_id=schedule_id).first()
 
@@ -112,14 +113,37 @@ def get_single_schedule(event):
     finally:
         session.close()
 
-def get_all_schedules():
+def get_schedules(event):
     session = create_session()
 
     try:
-        schedules = session.query(Schedule).all()
+        # Check for path parameters
+        path_parameters = event.get('pathParameters', {})
+        schedule_id = path_parameters.get('scheduleId')
+
+        # Check for query parameters
+        query_parameters = event.get('queryParameters', {})
+        schedule_no = query_parameters.get('scheduleNumber')
+        schedule_name = query_parameters.get('scheduleName')
+
+        # Build the filter conditions
+        filter_conditions = []
+        if schedule_id:
+            filter_conditions.append(Schedule.schedule_id == schedule_id)
+        if schedule_no:
+            filter_conditions.append(Schedule.schedule_number.ilike(f"%{schedule_no}%"))
+        if schedule_name:
+            filter_conditions.append(Schedule.schedule_name.ilike(f"%{schedule_name}%"))
+
+        # Apply the filters
+        if filter_conditions:
+            schedules = session.query(Schedule).filter(*filter_conditions).all()
+        else:
+            schedules = session.query(Schedule).all()
+
         schedule_list = [
-            {key: value for key, value in s.__dict__.items() if not key.startswith('_')}
-            for s in schedules
+            {key: value for key, value in ms.__dict__.items() if not key.startswith('_')}
+            for ms in schedules
         ]
 
         return {

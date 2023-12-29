@@ -9,11 +9,8 @@ def lambda_handler(event, context):
         method = event['httpMethod']
         path = event['path']
 
-        if path == '/machine_schedules' and method == 'GET':
-            return get_all_machine_schedules()
-
-        elif path.startswith('/machine_schedules/') and method == 'GET':
-            return get_single_machine_schedule(event)
+        if path.startswith('/machine_schedules') and method == 'GET':
+            return get_machine_schedules(event)
 
         elif method == 'POST':
             return create_machine_schedule(json.loads(event['body']))
@@ -89,34 +86,34 @@ def update_machine_schedule(event):
     finally:
         session.close()
 
-# function to get a single machine schedule by schedule_routine_id
-def get_single_machine_schedule(event):
+def get_machine_schedules(event):
     session = create_session()
 
     try:
-        schedule_routine_id = event['pathParameters']['scheduleRoutineId']
-        machine_schedule = session.query(MachineSchedule).filter_by(schedule_routine_id=schedule_routine_id).first()
+        # Check for path parameters
+        path_parameters = event.get('pathParameters', {})
+        schedule_routine_id = path_parameters.get('scheduleRoutineId')
 
-        if machine_schedule:
-            machine_schedule_data = {key: value for key, value in machine_schedule.__dict__.items() if not key.startswith('_')}
-            return {
-                'statusCode': 200,
-                'body': json.dumps(machine_schedule_data, cls=CustomJSONEncoder),
-            }
+        # Check for query parameters
+        query_parameters = event.get('queryParameters', {})
+        machine_id = query_parameters.get('machineId')
+        schedule_id = query_parameters.get('scheduleId')
+
+        # Build the filter conditions
+        filter_conditions = []
+        if schedule_routine_id:
+            filter_conditions.append(MachineSchedule.schedule_routine_id == schedule_routine_id)
+        if machine_id:
+            filter_conditions.append(MachineSchedule.machine_id == machine_id)
+        if schedule_id:
+            filter_conditions.append(MachineSchedule.schedule_id == schedule_id)
+
+        # Apply the filters
+        if filter_conditions:
+            machine_schedules = session.query(MachineSchedule).filter(*filter_conditions).all()
         else:
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'message': 'Machine schedule not found'}),
-            }
+            machine_schedules = session.query(MachineSchedule).all()
 
-    finally:
-        session.close()
-
-def get_all_machine_schedules():
-    session = create_session()
-
-    try:
-        machine_schedules = session.query(MachineSchedule).all()
         machine_schedule_list = [
             {key: value for key, value in ms.__dict__.items() if not key.startswith('_')}
             for ms in machine_schedules
@@ -129,6 +126,8 @@ def get_all_machine_schedules():
 
     finally:
         session.close()
+            
+
 
 def create_machine_schedule(data):
     session = create_session()

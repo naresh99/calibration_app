@@ -8,11 +8,8 @@ def lambda_handler(event, context):
         method = event['httpMethod']
         path = event['path']
 
-        if path == '/machines' and method == 'GET':
-            return get_all_machines()
-        
-        elif path.startswith('/machines/') and method == 'GET':
-            return get_single_machine(event)    
+        if path.startswith('/machines') and method == 'GET':
+            return get_machines(event)  
         
         elif method == 'POST':
             return create_machine(json.loads(event['body']))        
@@ -34,6 +31,52 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps({'message': 'Internal Server Error', 'error': str(e)}),
         }
+    
+# function to get machines based on various parametersdef get_machines(event):
+def get_machines(event):    
+    session = create_session()
+    
+    try:
+        #check for path parameters
+        path_parameters = event.get('pathParameters', {})
+        machine_Id = path_parameters.get('machineId')
+
+        # Check for query parameters
+        query_parameters = event.get('queryParameters', {})
+        
+        machine_name = query_parameters.get('machineName')
+        manufacturer = query_parameters.get('manufacturer')
+        model = query_parameters.get('model')
+        
+        # Build the filter conditions
+        filter_conditions = []
+        if machine_Id:
+            filter_conditions.append(Machine.machine_id == machine_Id)
+        if machine_name:
+            filter_conditions.append(Machine.machine_name.ilike(f"%{machine_name}%"))
+        if manufacturer:
+            filter_conditions.append(Machine.manufacturer.ilike(f"%{manufacturer}%"))
+        if model:
+            filter_conditions.append(Machine.model.ilike(f"%{model}%"))
+        
+        # Apply the filters
+        if filter_conditions:
+            machines = session.query(Machine).filter(*filter_conditions).all()
+        else:
+            machines = session.query(Machine).all()
+
+        machine_list = [
+            {key: value for key, value in m.__dict__.items() if not key.startswith('_')}
+            for m in machines
+        ]
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(machine_list, cls=CustomJSONEncoder),
+        }
+
+    finally:
+        session.close()   
     
 # function to delete a machine by machine_id
 def delete_machine(event):
@@ -87,51 +130,6 @@ def update_machine(event):
 
     finally:
         session.close()    
-
-# function to get a single machine by machine_id
-def get_single_machine(event):
-    session = create_session()
-
-    try:
-        machine_id = event['pathParameters']['machineId']
-        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
-
-        if machine:
-            machine_data = {key: value for key, value in machine.__dict__.items() if not key.startswith('_')}
-            return {
-                'statusCode': 200,
-                'body': json.dumps(machine_data, cls=CustomJSONEncoder),
-            }
-        else:
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'message': 'Machine not found'}),
-            }
-
-    finally:
-        session.close()
-
-
-
-def get_all_machines():
-    session = create_session()
-
-    try:
-        machines = session.query(Machine).all()
-        machine_list = [
-            {key: value for key, value in m.__dict__.items() if not key.startswith('_')}
-            for m in machines
-        ]
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(machine_list, cls=CustomJSONEncoder),
-        }
-
-    finally:
-        session.close()
-
-
 
 
 def create_machine(data):

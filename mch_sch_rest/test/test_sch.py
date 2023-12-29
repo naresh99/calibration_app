@@ -12,6 +12,20 @@ if __name__ == "__main__":
             "scheduleId": "201"
         }
     }
+    get_by_sch_name_event = {
+        "httpMethod": "GET",
+        "path": '/schedules/201',
+        "queryParameters": {
+            "scheduleName": "dule1"
+        }
+    }
+    get_by_sch_no_event = {
+        "httpMethod": "GET",
+        "path": '/schedules/201',
+        "queryParameters": {
+            "scheduleNumber": "789"
+        }
+    }        
     get_all_event = {
         "httpMethod": "GET",
         "path": "/schedules"
@@ -55,7 +69,9 @@ if __name__ == "__main__":
 
     context = {}
     #print(lambda_handler(get_event, context))
+    print(lambda_handler(get_by_sch_name_event, context))
+    #print(lambda_handler(get_by_sch_no_event, context))
     #print(lambda_handler(get_all_event, context))
     #print(lambda_handler(post_event, context))
     #print(lambda_handler(put_event, context))
-    print(lambda_handler(delete_event, context))
+    #print(lambda_handler(delete_event, context))
