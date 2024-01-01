@@ -13,8 +13,8 @@
 "deploy": {
   "packages": [
       {
-          "name": "Version 2.3.4",
-          "description": "Package version 2.3.4",
+          "name": "machine_lambda",
+          "description": "machine_lambda",
           "files": [
             "mch_sch_rest/*.py"
         ],
@@ -26,19 +26,58 @@
           "deployOnSave": false
       },
       {
-          "name": "Version 2.3.5 (anything)",
-          "description": "Package version 2.3.5"
-      }
+        "name": "schedule_lambda",
+        "description": "schedule_lambda",
+        "files": [
+          "mch_sch_rest/*.py"
+      ],
+        "exclude": [
+          "mch_sch_rest/test/**",
+          "mch_sch_rest/mch_sch_lambda.py",
+          "mch_sch_rest/machine_lambda.py"
+      ],
+        "deployOnSave": false
+    },
+    {
+      "name": "mch_sch_lambda",
+      "description": "mch_sch_lambda",
+      "files": [
+        "mch_sch_rest/*.py"
+    ],
+      "exclude": [
+        "mch_sch_rest/test/**",
+        "mch_sch_rest/machine_lambda.py",
+        "mch_sch_rest/schedule_lambda.py"
+    ],
+      "deployOnSave": false
+  }    
   ],
 
   "targets": [
       {
         "type": "zip",
-        "name": "My ZIP file",
-        "description": "Create a ZIP file in a target directory",
+        "name": "machine_lambda_zip",
+        "description": "machine_lambda",
         "open": false,
-        "target": "D:/"
-      }
+        "target": "D:/phrm/calibration_app/zip/",
+        "fileName": "machine_lambda.zip"
+      },
+      {
+        "type": "zip",
+        "name": "schedule_lambda_zip",
+        "description": "schedule_lambda",
+        "open": false,
+        "target": "D:/phrm/calibration_app/zip/",
+        "fileName": "schedule_lambda.zip"
+      },
+      {
+        "type": "zip",
+        "name": "mch_sch_lambda_zip",
+        "description": "machine_schedule",
+        "open": false,
+        "target": "D:/phrm/calibration_app/zip/",
+        "fileName": "mch_sch_lambda.zip"
+      }            
 ]
 
 }

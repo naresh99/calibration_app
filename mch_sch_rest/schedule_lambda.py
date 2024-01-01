@@ -12,9 +12,6 @@ def lambda_handler(event, context):
         if path.startswith('/schedules')  and method == 'GET':
             return get_schedules(event)
 
-        # elif path.startswith('/schedules') and method == 'GET':
-        #     return get_single_schedule(event)
-
         elif method == 'POST':
             return create_schedule(json.loads(event['body']))
 
@@ -41,7 +38,8 @@ def delete_schedule(event):
     session = create_session()
 
     try:
-        schedule_id = event['pathParameters']['scheduleId']
+        path_parameters = event.get('pathParameters', {})
+        schedule_id = path_parameters.get('scheduleId') if path_parameters else None
         schedule = session.query(Schedule).filter_by(schedule_id=schedule_id).first()
 
         if schedule:
@@ -66,7 +64,8 @@ def update_schedule(event):
     session = create_session()
 
     try:
-        schedule_id = event['pathParameters']['scheduleId']
+        path_parameters = event.get('pathParameters', {})
+        schedule_id = path_parameters.get('scheduleId') if path_parameters else None
         schedule = session.query(Schedule).filter_by(schedule_id=schedule_id).first()
 
         if schedule:
@@ -89,29 +88,6 @@ def update_schedule(event):
     finally:
         session.close()
 
-# function to get a single schedule by schedule_id
-def get_single_schedule(event):
-    session = create_session()
-
-    try:
-
-        schedule_id = event['pathParameters']['scheduleId']
-        schedule = session.query(Schedule).filter_by(schedule_id=schedule_id).first()
-
-        if schedule:
-            schedule_data = {key: value for key, value in schedule.__dict__.items() if not key.startswith('_')}
-            return {
-                'statusCode': 200,
-                'body': json.dumps(schedule_data, cls=CustomJSONEncoder),
-            }
-        else:
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'message': 'Schedule not found'}),
-            }
-
-    finally:
-        session.close()
 
 def get_schedules(event):
     session = create_session()
@@ -119,12 +95,12 @@ def get_schedules(event):
     try:
         # Check for path parameters
         path_parameters = event.get('pathParameters', {})
-        schedule_id = path_parameters.get('scheduleId')
+        schedule_id = path_parameters.get('scheduleId') if path_parameters else None
 
         # Check for query parameters
-        query_parameters = event.get('queryParameters', {})
-        schedule_no = query_parameters.get('scheduleNumber')
-        schedule_name = query_parameters.get('scheduleName')
+        query_parameters = event.get('queryStringParameters', {})
+        schedule_no = query_parameters.get('scheduleNumber') if query_parameters else None
+        schedule_name = query_parameters.get('scheduleName') if query_parameters else None
 
         # Build the filter conditions
         filter_conditions = []

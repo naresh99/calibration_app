@@ -7,25 +7,26 @@ from machine_lambda import lambda_handler
 if __name__ == "__main__":
     get_event ={
     "httpMethod": "GET",
-    "path" : '/machines/101',
+    "path" : "/machines/101",
     "pathParameters": {
       "machineId": "101"      
     } }
     get_by_mc_name_event ={
     "httpMethod": "GET",
-    "path" : '/machines/101',
+    "path" : "/machines/101",
     "queryParameters": {
       "machineName": "ine1"      
     } }    
     get_by_mfg_event ={
     "httpMethod": "GET",
-    "path" : '/machines/101',
+    "path" : "/machines/101",
     "queryParameters": {
       "manufacturer": "erb"      
     } }      
     get_all_event ={
     "httpMethod": "GET",
-    "path" : "/machines"
+    "path" : "/machines",
+    'pathParameters': None
     }    
     post_event = {
     "httpMethod": "POST",
@@ -61,7 +62,7 @@ if __name__ == "__main__":
 
     delete_event ={
     "httpMethod": "DELETE",
-    "path" : '/machines/101',
+    "path" : "/machines/101",
     "pathParameters": {
       "machineId": "101"
     }}  
@@ -69,8 +70,8 @@ if __name__ == "__main__":
     context = {}
     #print(lambda_handler(get_event, context))
     #print(lambda_handler(get_by_mc_name_event, context))
-    print(lambda_handler(get_by_mfg_event, context))
-    #print(lambda_handler(get_all_event, context))
+    #print(lambda_handler(get_by_mfg_event, context))
+    print(lambda_handler(get_all_event, context))
     #print(lambda_handler(post_event, context)) 
     # print(lambda_handler(put_event, context)) 
     # print(lambda_handler(delete_event, context)) 

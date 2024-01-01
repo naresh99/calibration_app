@@ -5,6 +5,7 @@ from database import create_session
 
 def lambda_handler(event, context):
     try:
+        print(event)
         method = event['httpMethod']
         path = event['path']
 
@@ -39,14 +40,14 @@ def get_machines(event):
     try:
         #check for path parameters
         path_parameters = event.get('pathParameters', {})
-        machine_Id = path_parameters.get('machineId')
+        machine_Id = path_parameters.get('machineId') if path_parameters else None
 
         # Check for query parameters
-        query_parameters = event.get('queryParameters', {})
+        query_parameters = event.get('queryStringParameters', {})
         
-        machine_name = query_parameters.get('machineName')
-        manufacturer = query_parameters.get('manufacturer')
-        model = query_parameters.get('model')
+        machine_name = query_parameters.get('machineName') if query_parameters else None
+        manufacturer = query_parameters.get('manufacturer') if query_parameters else None
+        model = query_parameters.get('model') if query_parameters else None
         
         # Build the filter conditions
         filter_conditions = []
@@ -83,8 +84,9 @@ def delete_machine(event):
     session = create_session()
 
     try:
-        machine_id = event['pathParameters']['machineId']
-        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
+        path_parameters = event.get('pathParameters', {})
+        machine_Id = path_parameters.get('machineId') if path_parameters else None
+        machine = session.query(Machine).filter_by(machine_id=machine_Id).first()
 
         if machine:
             session.delete(machine)
@@ -108,8 +110,9 @@ def update_machine(event):
     session = create_session()
 
     try:
-        machine_id = event['pathParameters']['machineId']
-        machine = session.query(Machine).filter_by(machine_id=machine_id).first()
+        path_parameters = event.get('pathParameters', {})
+        machine_Id = path_parameters.get('machineId') if path_parameters else None
+        machine = session.query(Machine).filter_by(machine_id=machine_Id).first()
 
         if machine:
             update_data = json.loads(event['body'])

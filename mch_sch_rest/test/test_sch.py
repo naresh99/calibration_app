@@ -7,7 +7,7 @@ from schedule_lambda import lambda_handler
 if __name__ == "__main__":
     get_event = {
         "httpMethod": "GET",
-        "path": '/schedules/201',
+        "path": "/schedules/201",
         "pathParameters": {
             "scheduleId": "201"
         }

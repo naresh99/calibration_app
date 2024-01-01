@@ -9,16 +9,16 @@ def lambda_handler(event, context):
         method = event['httpMethod']
         path = event['path']
 
-        if path.startswith('/machine_schedules') and method == 'GET':
+        if path.startswith('/machineSchedules') and method == 'GET':
             return get_machine_schedules(event)
 
         elif method == 'POST':
             return create_machine_schedule(json.loads(event['body']))
 
-        elif path.startswith('/machine_schedules/') and method == 'PUT':
+        elif path.startswith('/machineSchedules/') and method == 'PUT':
             return update_machine_schedule(event)
 
-        elif path.startswith('/machine_schedules/') and method == 'DELETE':
+        elif path.startswith('/machineSchedules/') and method == 'DELETE':
             return delete_machine_schedule(event)
 
         else:
@@ -38,7 +38,8 @@ def delete_machine_schedule(event):
     session = create_session()
 
     try:
-        schedule_routine_id = event['pathParameters']['scheduleRoutineId']
+        path_parameters = event.get('pathParameters', {})
+        schedule_routine_id = path_parameters.get('scheduleRoutineId') if path_parameters else None
         machine_schedule = session.query(MachineSchedule).filter_by(schedule_routine_id=schedule_routine_id).first()
 
         if machine_schedule:
@@ -63,7 +64,8 @@ def update_machine_schedule(event):
     session = create_session()
 
     try:
-        schedule_routine_id = event['pathParameters']['scheduleRoutineId']
+        path_parameters = event.get('pathParameters', {})
+        schedule_routine_id = path_parameters.get('scheduleRoutineId') if path_parameters else None
         machine_schedule = session.query(MachineSchedule).filter_by(schedule_routine_id=schedule_routine_id).first()
 
         if machine_schedule:
@@ -92,12 +94,12 @@ def get_machine_schedules(event):
     try:
         # Check for path parameters
         path_parameters = event.get('pathParameters', {})
-        schedule_routine_id = path_parameters.get('scheduleRoutineId')
+        schedule_routine_id = path_parameters.get('scheduleRoutineId') if path_parameters else None
 
         # Check for query parameters
-        query_parameters = event.get('queryParameters', {})
-        machine_id = query_parameters.get('machineId')
-        schedule_id = query_parameters.get('scheduleId')
+        query_parameters = event.get('queryStringParameters', {})
+        machine_id = query_parameters.get('machineId') if query_parameters else None
+        schedule_id = query_parameters.get('scheduleId') if query_parameters else None
 
         # Build the filter conditions
         filter_conditions = []
