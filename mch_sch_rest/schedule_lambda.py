@@ -3,6 +3,8 @@ from datetime import date
 from model import Schedule
 from database import create_session
 from utils import CustomJSONEncoder
+from sqlalchemy.exc import IntegrityError
+
 
 def lambda_handler(event, context):
     try:
@@ -43,13 +45,21 @@ def delete_schedule(event):
         schedule = session.query(Schedule).filter_by(schedule_id=schedule_id).first()
 
         if schedule:
-            session.delete(schedule)
-            session.commit()
+            try:
+                session.delete(schedule)
+                session.commit()
 
-            return {
-                'statusCode': 200,
-                'body': json.dumps({'message': 'Schedule deleted successfully'}),
-            }
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps({'message': 'Schedule deleted successfully'}),
+                }
+
+            except IntegrityError as e:
+                # Handle the ForeignKeyViolation specifically
+                return {
+                    'statusCode': 400,
+                    'body': json.dumps({'message': 'Cannot delete schedule due to existing references. Consider updating instead.'}),
+                }
         else:
             return {
                 'statusCode': 404,

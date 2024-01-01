@@ -2,6 +2,7 @@ import json
 from utils import CustomJSONEncoder
 from model import Machine
 from database import create_session
+from sqlalchemy.exc import IntegrityError
 
 def lambda_handler(event, context):
     try:
@@ -89,13 +90,20 @@ def delete_machine(event):
         machine = session.query(Machine).filter_by(machine_id=machine_Id).first()
 
         if machine:
-            session.delete(machine)
-            session.commit()
+            try:
+                session.delete(machine)
+                session.commit()
 
-            return {
+                return {
                 'statusCode': 200,
                 'body': json.dumps({'message': 'Machine deleted successfully'}),
-            }
+                }
+            except IntegrityError as e:
+                # Handle the ForeignKeyViolation specifically
+                return {
+                    'statusCode': 400,
+                    'body': json.dumps({'message': 'Cannot delete machine due to existing references. Consider updating instead.'}),
+                }            
         else:
             return {
                 'statusCode': 404,

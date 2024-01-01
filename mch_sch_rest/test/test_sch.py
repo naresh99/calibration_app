@@ -69,9 +69,9 @@ if __name__ == "__main__":
 
     context = {}
     #print(lambda_handler(get_event, context))
-    print(lambda_handler(get_by_sch_name_event, context))
+    #print(lambda_handler(get_by_sch_name_event, context))
     #print(lambda_handler(get_by_sch_no_event, context))
     #print(lambda_handler(get_all_event, context))
     #print(lambda_handler(post_event, context))
     #print(lambda_handler(put_event, context))
-    #print(lambda_handler(delete_event, context))
+    print(lambda_handler(delete_event, context))
