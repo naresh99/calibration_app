@@ -8,19 +8,19 @@ from mch_sch_lambda import lambda_handler
 if __name__ == "__main__":
     get_event = {
         "httpMethod": "GET",
-        "path": '/machine_schedules/301',
+        "path": '/machineSchedules/301',
         "pathParameters": {
             "scheduleRoutineId": "301"
         }
     }
     get_all_event = {
         "httpMethod": "GET",
-        "path": "/machine_schedules"
+        "path": "/machineSchedules"
     }
 
     get_by_machine_id_event = {
         "httpMethod": "GET",
-        "path": "/machine_schedules/",
+        "path": "/machineSchedules/",
         "queryParameters": {
             "machineId": "102"
         }
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     get_by_schedule_id_event = {
         "httpMethod": "GET",
-        "path": "/machine_schedules/",
+        "path": "/machineSchedules/",
         "queryParameters": {
             "scheduleId": "202"
         }
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     get_by_mch_id_sch_id_event = {
         "httpMethod": "GET",
-        "path": "/machine_schedules/",
+        "path": "/machineSchedules/",
         "queryParameters": {
             "scheduleId": "202",
             "machineId": "102"
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     post_event = {
         "httpMethod": "POST",
-        "path": "/machine_schedules",
+        "path": "/machineSchedules",
         "body": json.dumps({
             "schedule_id": 202,
             "machine_id": 106
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     put_event = {
         "httpMethod": "PUT",
-        "path": "/machine_schedules/301",
+        "path": "/machineSchedules/301",
         "pathParameters": {
             "scheduleRoutineId": "301"
         },
@@ -65,18 +65,18 @@ if __name__ == "__main__":
 
     delete_event = {
         "httpMethod": "DELETE",
-        "path": '/machine_schedules/302',
+        "path": '/machineSchedules/302',
         "pathParameters": {
-            "scheduleRoutineId": "302"
+            "scheduleRoutineId": "301"
         }
     }
 
     context = {}
-    print(lambda_handler(get_event, context))
+    #print(lambda_handler(get_event, context))
     #print(lambda_handler(get_all_event, context))
     #print(lambda_handler(get_by_machine_id_event, context))
     #print(lambda_handler(get_by_schedule_id_event, context))
     #print(lambda_handler(get_by_mch_id_sch_id_event, context))
     #print(lambda_handler(post_event, context))
     #print(lambda_handler(put_event, context))
-    #print(lambda_handler(delete_event, context))
+    print(lambda_handler(delete_event, context))

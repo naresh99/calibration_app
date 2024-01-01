@@ -15,10 +15,10 @@ def lambda_handler(event, context):
         elif method == 'POST':
             return create_machine_schedule(json.loads(event['body']))
 
-        elif path.startswith('/machineSchedules/') and method == 'PUT':
+        elif path.startswith('/machineSchedules') and method == 'PUT':
             return update_machine_schedule(event)
 
-        elif path.startswith('/machineSchedules/') and method == 'DELETE':
+        elif path.startswith('/machineSchedules') and method == 'DELETE':
             return delete_machine_schedule(event)
 
         else:
